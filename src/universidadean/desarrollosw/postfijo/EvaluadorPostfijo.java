@@ -1,0 +1,89 @@
+/**
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Universidad Ean (Bogotá - Colombia)
+ * Departamento de Tecnologías de la Información y Comunicaciones
+ * Licenciado bajo el esquema Academic Free License version 2.1
+ * <p>
+ * Proyecto Evaluador de Expresiones Postfijas
+ * Fecha: Febrero 2021
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+package universidadean.desarrollosw.postfijo;
+
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.util.*;
+
+
+/**
+ * Esta clase representa una clase que evalúa expresiones en notación polaca o
+ * postfija. Por ejemplo: 4 5 +
+ */
+public class EvaluadorPostfijo {
+
+    /**
+     * Realiza la evaluación de la expresión postfijo utilizando una pila
+     *
+     * @param expresion una lista de elementos con números u operadores
+     * @return el resultado de la evaluación de la expresión.
+     */
+    static int evaluarPostFija(List<String> expresion) {
+        Stack<Integer> pila = new Stack<>();
+
+
+        // TODO: Realiza la evaluación de la expresión en formato postfijo
+        for (String token : expresion) {
+            char charToken = token.charAt(0);
+            if (Character.isDigit(charToken))
+                pila.push(Integer.parseInt(token));
+            else {
+                int index = pila.size()-1;
+                int index1 = pila.size()-2;
+
+                if (index>=0 && index1>=0 && charToken == '+') {
+                    pila.set(pila.size()-2, pila.get(index1) + pila.get(index));
+                    pila.pop();
+                } else if (index>=0 && index1>=0 && charToken == '-') {
+                    pila.set(pila.size()-2, pila.get(index1) - pila.get(index));
+                    pila.pop();
+                } else if (index>=0 && index1>=0 && charToken == '*') {
+                    pila.set(pila.size()-2, pila.get(index1) * pila.get(index));
+                    pila.pop();
+                } else if (index>=0 && index1>=0 && charToken == '/') {
+                    pila.set(pila.size()-2, pila.get(index1) / pila.get(index));
+                    pila.pop();
+                } else if (index>=0 && index1>=0 && charToken == '%') {
+                    pila.set(pila.size()-2, pila.get(index1) % pila.get(index));
+                    pila.pop();
+                } else if (index>=0 && index1>=0 && charToken == '^') {
+                    pila.set(pila.size()-2, (int) Math.pow(pila.get(index1), pila.get(index)));
+                    pila.pop();
+
+                }
+            }
+
+        }
+
+
+        return pila.pop();
+    }
+
+    /**
+     * Programa principal
+     */
+    public static void main(String[] args) {
+        Scanner teclado = new Scanner(System.in);
+
+        System.out.print("> ");
+        String linea = teclado.nextLine();
+
+        try {
+            List<String> expresion = Token.dividir(linea);
+            System.out.println(evaluarPostFija(expresion));
+        } catch (Exception e) {
+            System.err.printf("Error grave en la expresión: %s", e.getMessage());
+        }
+
+    }
+}
